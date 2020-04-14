@@ -1,0 +1,27 @@
+{
+  "name": "dnd-party-manager",
+  "version": "0.0.1",
+  "description": "a party manager for DnD Beyond",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "serve": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mcmillenb/dnd-party-manager.git"
+  },
+  "keywords": [
+    "dnd",
+    "manager"
+  ],
+  "author": "Brian McMillen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mcmillenb/dnd-party-manager/issues"
+  },
+  "homepage": "https://github.com/mcmillenb/dnd-party-manager#readme",
+  "devDependencies": {
+    "jest": "^25.3.0"
+  }
+}
