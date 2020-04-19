@@ -1,25 +1,22 @@
+const puppeteer = require('puppeteer');
 const http = require('http');
-const axios = require('axios');
 const cheerio = require('cheerio');
+
+async function getHtml(url) {
+  const browser = await puppeteer.launch({ headless: false });
+  const page = await browser.newPage();
+  await page.goto(url, { waitUntil: 'networkidle2' });
+  const html = await page.content();
+  await browser.close();
+  return html;
+}
 
 const hostname = '127.0.0.1';
 const port = 3000;
 
 const characterUrl = 'https://www.dndbeyond.com/profile/brianmcmillen1/characters/6626114';
-axios({
-  url: characterUrl,
-  method: 'get',
-  withCredentials: true,
-  headers: {
-    'Cache-Control': 'no-cache',
-    'Cookies': 'foo=bar',
-    'User-Agent': 'dnd-party-manager',
-    'Accept': '*/*',
-    'Accept-Encoding': 'gzip, deflate, br',
-    'Connection': 'keep-alive'
-  }
-}).then((resp) => {
-  const $ = cheerio.load(resp.data);
+getHtml(characterUrl).then((html) => {
+  const $ = cheerio.load(html);
   const title = $('h1.page-title').text().trim();
 
   const server = http.createServer((req, res) => {
