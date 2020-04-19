@@ -1,6 +1,6 @@
 {
   "name": "dnd-party-manager",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "a party manager for DnD Beyond",
   "main": "index.js",
   "scripts": {
