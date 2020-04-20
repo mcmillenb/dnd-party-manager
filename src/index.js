@@ -18,11 +18,26 @@ const characterUrl = 'https://www.dndbeyond.com/profile/brianmcmillen1/character
 getHtml(characterUrl).then((html) => {
   const $ = cheerio.load(html);
   const title = $('h1.page-title').text().trim();
+  const stats = $('.ct-ability-summary__secondary');
+  const str = stats.eq(0).text();
+  const dex = stats.eq(1).text();
+  const con = stats.eq(2).text();
+  const int = stats.eq(3).text();
+  const wis = stats.eq(4).text();
+  const cha = stats.eq(5).text();
 
   const server = http.createServer((req, res) => {
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/plain');
-    res.end(`Title: ${title}`);
+    res.end(`
+      Title: ${title}
+      STR ${str}
+      DEX ${dex}
+      CON ${con}
+      INT ${int}
+      WIS ${wis}
+      CHA ${cha}
+    `);
   });
 
   server.listen(port, hostname, () => {
