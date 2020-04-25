@@ -2,6 +2,9 @@ const puppeteer = require('puppeteer');
 const http = require('http');
 const cheerio = require('cheerio');
 
+const hostname = '127.0.0.1';
+const port = 3000;
+
 async function getHtml(url) {
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
@@ -11,16 +14,8 @@ async function getHtml(url) {
   return html;
 }
 
-const hostname = '127.0.0.1';
-const port = 3000;
-
-const characterUrl = 'https://www.dndbeyond.com/profile/brianmcmillen1/characters';
-const server = http.createServer(async (req, res) => {
-  const { url } = req;
-  if (!url.match(/^[\/]\d+$/)) {
-    res.end('bad id');
-    return;
-  }
+async function parseCharacterSheet(url) {
+  const characterUrl = 'https://www.dndbeyond.com/profile/brianmcmillen1/characters';
   const html = await getHtml(`${characterUrl}${url}`);
   const $ = cheerio.load(html);
   const title = $('h1.page-title').text().trim();
@@ -32,10 +27,21 @@ const server = http.createServer(async (req, res) => {
   const wis = stats.eq(4).text();
   const cha = stats.eq(5).text();
 
-  const data = {
+  return {
     title,
     stats: { str, dex, con, int, wis, cha }
   };
+}
+
+const server = http.createServer(async (req, res) => {
+  const { url } = req;
+  let data = {};
+  if (url.match(/^[\/]\d+$/)) {
+    data = await parseCharacterSheet(url);
+  } else {
+    res.end('bad id');
+    return;
+  }
 
   res.statusCode = 200;
   res.setHeader('Content-Type', 'application/json');
