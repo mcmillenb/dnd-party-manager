@@ -31,17 +31,15 @@ const server = http.createServer(async (req, res) => {
   const int = stats.eq(3).text();
   const wis = stats.eq(4).text();
   const cha = stats.eq(5).text();
+
+  const data = {
+    title,
+    stats: { str, dex, con, int, wis, cha }
+  };
+
   res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end(`
-    Title: ${title}
-    STR ${str}
-    DEX ${dex}
-    CON ${con}
-    INT ${int}
-    WIS ${wis}
-    CHA ${cha}
-  `);
+  res.setHeader('Content-Type', 'application/json');
+  res.end(JSON.stringify(data));
 });
 
 server.listen(port, hostname, () => {
