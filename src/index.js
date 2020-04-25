@@ -14,8 +14,14 @@ async function getHtml(url) {
 const hostname = '127.0.0.1';
 const port = 3000;
 
-const characterUrl = 'https://www.dndbeyond.com/profile/brianmcmillen1/characters/6626114';
-getHtml(characterUrl).then((html) => {
+const characterUrl = 'https://www.dndbeyond.com/profile/brianmcmillen1/characters';
+const server = http.createServer(async (req, res) => {
+  const { url } = req;
+  if (!url.match(/^[\/]\d+$/)) {
+    res.end('bad id');
+    return;
+  }
+  const html = await getHtml(`${characterUrl}${url}`);
   const $ = cheerio.load(html);
   const title = $('h1.page-title').text().trim();
   const stats = $('.ct-ability-summary__secondary');
@@ -25,24 +31,19 @@ getHtml(characterUrl).then((html) => {
   const int = stats.eq(3).text();
   const wis = stats.eq(4).text();
   const cha = stats.eq(5).text();
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/plain');
+  res.end(`
+    Title: ${title}
+    STR ${str}
+    DEX ${dex}
+    CON ${con}
+    INT ${int}
+    WIS ${wis}
+    CHA ${cha}
+  `);
+});
 
-  const server = http.createServer((req, res) => {
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain');
-    res.end(`
-      Title: ${title}
-      STR ${str}
-      DEX ${dex}
-      CON ${con}
-      INT ${int}
-      WIS ${wis}
-      CHA ${cha}
-    `);
-  });
-
-  server.listen(port, hostname, () => {
-    console.log(`Server running at http://${hostname}:${port}/`);
-  });
-}).catch((error) => {
-  console.error(error);
+server.listen(port, hostname, () => {
+  console.log(`Server running at http://${hostname}:${port}/`);
 });
